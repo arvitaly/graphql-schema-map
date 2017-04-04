@@ -13,11 +13,14 @@ class Mapper {
         this.mapp = mapp;
         this.mapping = {
             mapGraphQLObjectType: (config) => config,
+            mapGraphQLInputObjectType: (config) => config,
             mapGraphQLScalarType: (config) => config,
             mapGraphQLInterfaceType: (config) => config,
             mapGraphQLObjectTypeField: (config) => config,
+            mapGraphQLInputObjectTypeField: (config) => config,
             mapGraphQLObjectTypeFieldArg: (config) => config,
             mapGraphQLObjectTypeFieldType: (config) => config,
+            mapGraphQLInputObjectTypeFieldType: (config) => config,
             mapGraphQLSchema: (config) => config,
             mapGraphQLObjectTypeFieldArgs: (config) => config,
         };
@@ -42,6 +45,9 @@ class Mapper {
     setMapGraphQLObjectType(f) {
         this.mapping.mapGraphQLObjectType = f;
     }
+    setMapGraphQLInputObjectType(f) {
+        this.mapping.mapGraphQLInputObjectType = f;
+    }
     setMapGraphQLScalarType(f) {
         this.mapping.mapGraphQLScalarType = f;
     }
@@ -51,8 +57,14 @@ class Mapper {
     setMapGraphQLObjectTypeField(f) {
         this.mapping.mapGraphQLObjectTypeField = f;
     }
+    setMapGraphQLInputObjectTypeField(f) {
+        this.mapping.mapGraphQLInputObjectTypeField = f;
+    }
     setMapGraphQLObjectTypeFieldType(f) {
         this.mapping.mapGraphQLObjectTypeFieldType = f;
+    }
+    setMapGraphQLInputObjectTypeFieldType(f) {
+        this.mapping.mapGraphQLInputObjectTypeFieldType = f;
     }
     setMapGraphQLObjectTypeFieldArg(f) {
         this.mapping.mapGraphQLObjectTypeFieldArg = f;
@@ -63,6 +75,17 @@ class Mapper {
     mapGraphQLObjectTypeFieldType(name, objectType, type) {
         const info = this.mapOutput(type);
         return this.mapping.mapGraphQLObjectTypeFieldType({
+            name,
+            objectType,
+            type,
+            isArray: info.isArray,
+            isNonNull: info.isNonNull,
+            realType: info.realType,
+        });
+    }
+    mapGraphQLInputObjectTypeFieldType(name, objectType, type) {
+        const info = this.mapOutput(type);
+        return this.mapping.mapGraphQLInputObjectTypeFieldType({
             name,
             objectType,
             type,
@@ -92,6 +115,9 @@ class Mapper {
         else if (realType instanceof g.GraphQLInterfaceType) {
             this.mapping.mapGraphQLInterfaceType({ type: realType });
         }
+        else if (realType instanceof g.GraphQLInputObjectType) {
+            this.mapGraphQLInputObjectType(realType);
+        }
         else {
             throw new Error("Unknown type: " + realType);
         }
@@ -111,6 +137,26 @@ class Mapper {
             isArray: info.isArray,
             isNonNull: info.isNonNull,
             realType: info.realType,
+        });
+    }
+    mapGraphQLInputObjectType(type) {
+        if (this.types.some((t) => t === type)) {
+            return;
+        }
+        this.types.push(type);
+        const fields = type.getFields();
+        const mapFields = Object.keys(fields).map((fieldName) => {
+            const field = fields[fieldName];
+            const mapType = this.mapGraphQLInputObjectTypeFieldType(fieldName, type, field.type);
+            return this.mapping.mapGraphQLInputObjectTypeField({
+                name: fieldName,
+                objectType: type,
+                type: mapType,
+            });
+        });
+        return this.mapping.mapGraphQLInputObjectType({
+            type,
+            fields: mapFields,
         });
     }
     mapGraphQLObjectType(type) {

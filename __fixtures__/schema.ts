@@ -3,6 +3,14 @@ import { nodeDefinitions } from "graphql-relay";
 const nodeInterface = nodeDefinitions(() => {/* */ }, () => {
     return null as any;
 });
+const where = new g.GraphQLInputObjectType({
+    name: "Where",
+    fields: {
+        field1: {
+            type: g.GraphQLString,
+        },
+    },
+});
 const schema = new g.GraphQLSchema({
     query: new g.GraphQLObjectType({
         name: "Query",
