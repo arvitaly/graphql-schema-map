@@ -14,6 +14,7 @@ class Mapper {
         this.mapping = {
             mapGraphQLObjectType: (config) => config,
             mapGraphQLScalarType: (config) => config,
+            mapGraphQLInterfaceType: (config) => config,
             mapGraphQLObjectTypeField: (config) => config,
             mapGraphQLObjectTypeFieldArg: (config) => config,
             mapGraphQLObjectTypeFieldType: (config) => config,
@@ -43,6 +44,9 @@ class Mapper {
     }
     setMapGraphQLScalarType(f) {
         this.mapping.mapGraphQLScalarType = f;
+    }
+    setMapGraphQLInterfaceType(f) {
+        this.mapping.mapGraphQLInterfaceType = f;
     }
     setMapGraphQLObjectTypeField(f) {
         this.mapping.mapGraphQLObjectTypeField = f;
@@ -84,6 +88,9 @@ class Mapper {
         }
         else if (realType instanceof g.GraphQLScalarType) {
             this.mapping.mapGraphQLScalarType({ type: realType });
+        }
+        else if (realType instanceof g.GraphQLInterfaceType) {
+            this.mapping.mapGraphQLInterfaceType({ type: realType });
         }
         else {
             throw new Error("Unknown type: " + realType);

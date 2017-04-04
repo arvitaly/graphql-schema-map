@@ -12,6 +12,9 @@ export interface IGraphQLObjectTypeConfig {
 export interface IGraphQLScalarTypeConfig {
     type: g.GraphQLScalarType;
 }
+export interface IGraphQLInterfaceTypeConfig {
+    type: g.GraphQLInterfaceType;
+}
 export interface IGraphQLObjectTypeFieldConfig {
     objectType: g.GraphQLObjectType;
     name: string;
@@ -51,6 +54,7 @@ export interface IMapper {
     mapGraphQLSchema: (config: IGraphQLSchemaConfig) => any;
     mapGraphQLObjectType: (config: IGraphQLObjectTypeConfig) => any;
     mapGraphQLScalarType: (config: IGraphQLScalarTypeConfig) => any;
+    mapGraphQLInterfaceType: (config: IGraphQLInterfaceTypeConfig) => any;
     mapGraphQLObjectTypeField: (config: IGraphQLObjectTypeFieldConfig) => any;
     mapGraphQLObjectTypeFieldType: (config: IGraphQLObjectTypeFieldTypeConfig) => any;
     mapGraphQLObjectTypeFieldArg: (config: IGraphQLObjectTypeFieldArgConfig) => any;
@@ -69,6 +73,7 @@ export class Mapper {
     protected mapping: IMapper = {
         mapGraphQLObjectType: (config) => config,
         mapGraphQLScalarType: (config) => config,
+        mapGraphQLInterfaceType: (config) => config,
         mapGraphQLObjectTypeField: (config) => config,
         mapGraphQLObjectTypeFieldArg: (config) => config,
         mapGraphQLObjectTypeFieldType: (config) => config,
@@ -100,6 +105,9 @@ export class Mapper {
     }
     public setMapGraphQLScalarType(f: (config: IGraphQLScalarTypeConfig) => any) {
         this.mapping.mapGraphQLScalarType = f;
+    }
+    public setMapGraphQLInterfaceType(f: (config: IGraphQLInterfaceTypeConfig) => any) {
+        this.mapping.mapGraphQLInterfaceType = f;
     }
     public setMapGraphQLObjectTypeField(f: (config: IGraphQLObjectTypeFieldConfig) => any) {
         this.mapping.mapGraphQLObjectTypeField = f;
@@ -140,6 +148,8 @@ export class Mapper {
             this.mapGraphQLObjectType(realType);
         } else if (realType instanceof g.GraphQLScalarType) {
             this.mapping.mapGraphQLScalarType({ type: realType });
+        } else if (realType instanceof g.GraphQLInterfaceType) {
+            this.mapping.mapGraphQLInterfaceType({ type: realType });
         } else {
             throw new Error("Unknown type: " + realType);
         }

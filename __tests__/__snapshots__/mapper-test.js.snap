@@ -5,6 +5,7 @@ Object {
   "mutation": undefined,
   "query": Object {
     "fields": Array [
+      "node",
       "viewer",
     ],
   },
