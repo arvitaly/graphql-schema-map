@@ -1,6 +1,6 @@
 {
   "name": "graphql-schema-map",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Mapping GraphQLSchema",
   "main": "index.js",
   "scripts": {
@@ -18,8 +18,7 @@
     "url": "https://github.com/arvitaly/graphql-schema-map/issues"
   },
   "homepage": "https://github.com/arvitaly/graphql-schema-map#readme",
-  "jest": {
-  },
+  "jest": {},
   "devDependencies": {
     "@types/jest": "^19.2.2",
     "coveralls": "^2.13.0",
