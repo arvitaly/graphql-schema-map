@@ -24,6 +24,9 @@ const schema = new g.GraphQLSchema({
                     fields: {
                         id: { type: new g.GraphQLNonNull(g.GraphQLID) },
                         model1: {
+                            args: {
+                                where: { type: where },
+                            },
                             type: new g.GraphQLObjectType({
                                 name: "Model1Connection",
                                 fields: {
