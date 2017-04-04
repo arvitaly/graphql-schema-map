@@ -16,7 +16,7 @@ export interface IGraphQLObjectTypeFieldConfig {
     objectType: g.GraphQLObjectType;
     name: string;
     args: any[];
-    type: g.GraphQLOutputType;
+    type: any;
 }
 export interface IGraphQLObjectTypeFieldTypeConfig {
     objectType: g.GraphQLObjectType;
