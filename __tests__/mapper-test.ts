@@ -7,7 +7,7 @@ import mapping, {
 } from "./..";
 import schema from "./../__fixtures__/schema";
 class Mapper implements IMapperOptional {
-    public mapGraphQLSchema(config: IGraphQLSchemaConfig<any, any>) {
+    public mapGraphQLSchema(config: IGraphQLSchemaConfig) {
         return {
             query: config.query,
             mutation: config.mutation,

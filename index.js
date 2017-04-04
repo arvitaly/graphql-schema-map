@@ -12,12 +12,13 @@ class Mapper {
         this.schema = schema;
         this.mapp = mapp;
         this.mapping = {
-            mapGraphQLObjectType: (config) => config.type,
-            mapGraphQLScalarType: (config) => config.type,
-            mapGraphQLObjectTypeField: (config) => config.type,
-            mapGraphQLObjectTypeFieldArg: (config) => config.type,
-            mapGraphQLObjectTypeFieldType: (config) => config.type,
-            mapGraphQLSchema: (config) => config.schema,
+            mapGraphQLObjectType: (config) => config,
+            mapGraphQLScalarType: (config) => config,
+            mapGraphQLObjectTypeField: (config) => config,
+            mapGraphQLObjectTypeFieldArg: (config) => config,
+            mapGraphQLObjectTypeFieldType: (config) => config,
+            mapGraphQLSchema: (config) => config,
+            mapGraphQLObjectTypeFieldArgs: (config) => config,
         };
         this.types = [];
         keys.map((f) => {
@@ -52,6 +53,59 @@ class Mapper {
     setMapGraphQLObjectTypeFieldArg(f) {
         this.mapping.mapGraphQLObjectTypeFieldArg = f;
     }
+    setMapGraphQLObjectTypeFieldArgs(f) {
+        this.mapping.mapGraphQLObjectTypeFieldArgs = f;
+    }
+    mapGraphQLObjectTypeFieldType(name, objectType, type) {
+        const info = this.mapOutput(type);
+        return this.mapping.mapGraphQLObjectTypeFieldType({
+            name,
+            objectType,
+            type,
+            isArray: info.isArray,
+            isNonNull: info.isNonNull,
+            realType: info.realType,
+        });
+    }
+    mapOutput(type) {
+        let realType = type;
+        let isArray = false;
+        let isNonNull = false;
+        if (realType instanceof g.GraphQLNonNull) {
+            realType = realType.ofType;
+            isNonNull = true;
+        }
+        if (realType instanceof g.GraphQLList) {
+            realType = realType.ofType;
+            isArray = true;
+        }
+        if (realType instanceof g.GraphQLObjectType) {
+            this.mapGraphQLObjectType(realType);
+        }
+        else if (realType instanceof g.GraphQLScalarType) {
+            this.mapping.mapGraphQLScalarType({ type: realType });
+        }
+        else {
+            throw new Error("Unknown type: " + realType);
+        }
+        return {
+            isArray,
+            isNonNull,
+            realType,
+        };
+    }
+    mapGraphQLObjectTypeFieldArg(name, fieldName, type, objectType) {
+        const info = this.mapOutput(type);
+        return this.mapping.mapGraphQLObjectTypeFieldArg({
+            fieldName,
+            name,
+            type,
+            objectType,
+            isArray: info.isArray,
+            isNonNull: info.isNonNull,
+            realType: info.realType,
+        });
+    }
     mapGraphQLObjectType(type) {
         if (this.types.some((t) => t === type)) {
             return;
@@ -60,34 +114,20 @@ class Mapper {
         const fields = type.getFields();
         const mapFields = Object.keys(fields).map((fieldName) => {
             const field = fields[fieldName];
-            let realType = field.type;
-            if (realType instanceof g.GraphQLNonNull) {
-                realType = realType.ofType;
-            }
-            if (realType instanceof g.GraphQLObjectType) {
-                this.mapGraphQLObjectType(realType);
-            }
-            if (realType instanceof g.GraphQLScalarType) {
-                this.mapping.mapGraphQLScalarType({ type: realType });
-            }
-            const mapFieldType = this.mapping.mapGraphQLObjectTypeFieldType({
+            const mapType = this.mapGraphQLObjectTypeFieldType(fieldName, type, field.type);
+            const mapArgs = this.mapping.mapGraphQLObjectTypeFieldArgs({
+                args: field.args.map((arg) => {
+                    return this.mapGraphQLObjectTypeFieldArg(arg.name, fieldName, arg.type, type);
+                }),
                 objectType: type,
-                name: fieldName,
-                type: field.type,
+                fieldName,
+                fieldType: field.type,
             });
-            const mapArgs = field.args.map((arg) => {
-                return this.mapping.mapGraphQLObjectTypeFieldArg({
-                    fieldName,
-                    name: arg.name,
-                    type: arg.type,
-                    objectType: type,
-                });
-            });
-            this.mapping.mapGraphQLObjectTypeField({
+            return this.mapping.mapGraphQLObjectTypeField({
                 args: mapArgs,
                 name: fieldName,
                 objectType: type,
-                type: mapFieldType,
+                type: mapType,
             });
         });
         return this.mapping.mapGraphQLObjectType({
