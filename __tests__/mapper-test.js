@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("./..");
-const schema_1 = require("./../__fixtures__/schema");
+const github_1 = require("./../__fixtures__/github");
 class Mapper {
     mapGraphQLSchema(config) {
         return {
@@ -22,7 +22,7 @@ class Mapper {
 }
 describe("Mapper", () => {
     it("simple", () => {
-        const result = __1.default(schema_1.default, new Mapper());
+        const result = __1.default(github_1.default, new Mapper());
         expect(result).toMatchSnapshot();
     });
 });

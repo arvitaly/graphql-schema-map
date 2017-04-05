@@ -5,7 +5,7 @@ import mapping, {
     IGraphQLSchemaConfig,
     IMapperOptional,
 } from "./..";
-import schema from "./../__fixtures__/schema";
+import schema from "./../__fixtures__/github";
 class Mapper implements IMapperOptional {
     public mapGraphQLSchema(config: IGraphQLSchemaConfig) {
         return {

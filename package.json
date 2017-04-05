@@ -21,6 +21,7 @@
   "jest": {},
   "devDependencies": {
     "@types/jest": "^19.2.2",
+    "@types/node": "^7.0.12",
     "coveralls": "^2.13.0",
     "jest": "^19.0.2",
     "tslint": "^5.0.0",

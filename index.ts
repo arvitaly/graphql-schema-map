@@ -187,6 +187,9 @@ export class Mapper {
         }
         if (realType instanceof g.GraphQLList) {
             realType = realType.ofType;
+            if (realType instanceof g.GraphQLNonNull) {
+                realType = realType.ofType;
+            }
             isArray = true;
         }
         if (realType instanceof g.GraphQLObjectType) {
@@ -197,8 +200,12 @@ export class Mapper {
             this.mapping.mapGraphQLInterfaceType({ type: realType });
         } else if (realType instanceof g.GraphQLInputObjectType) {
             this.mapGraphQLInputObjectType(realType);
+        } else if (realType instanceof g.GraphQLEnumType) {
+            // TODO
+        } else if (realType instanceof g.GraphQLUnionType) {
+            // TODO
         } else {
-            throw new Error("Unknown type: " + realType);
+            throw new Error("Unknown type: " + type);
         }
         return {
             isArray,
