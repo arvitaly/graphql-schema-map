@@ -3,8 +3,6 @@ import * as g from "graphql";
 // tslint:disable-next-line:max-line-length
 // export type GraphQLType = "Object"    | "String" | "Enum" | "Float" | "Int" | "Boolean" | "Union" | "NonNull" | "ID" | "InputObject";
 
-type GraphQLAnyType = "any";
-
 export interface IGraphQLObjectTypeConfig {
     type: g.GraphQLObjectType;
     fields: any[];

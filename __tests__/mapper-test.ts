@@ -1,4 +1,3 @@
-import * as g from "graphql";
 import mapping, {
     IGraphQLObjectTypeConfig,
     IGraphQLObjectTypeFieldConfig,
